@@ -1,39 +1,21 @@
-from flask import Flask, request, jsonify
+# Import requests library
 import requests
-from bs4 import BeautifulSoup
 
-app = Flask(__name__)
+# Define the phone number to check
+phone_number = "+962791837555885"
 
-def has_whatsapp(phone_number):
-    url = f"https://wa.me/{phone_number}"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        if 'Join WhatsApp' in soup.get_text():
-            return False
-        else:
-            return True
-    else:
-        return False
-
-def is_valid_phone(phone_number):
-    # Add your own phone number validation logic if needed
-    return True
-
-@app.route('/check-whatsapp', methods=['GET'])
-def check_whatsapp():
-    phone_number = request.args.get('phone', '')
-
-    if phone_number:
-        if is_valid_phone(phone_number):
-            is_whatsapp = has_whatsapp(phone_number)
-            return jsonify({'has_whatsapp': is_whatsapp, 'phone': phone_number})
-        else:
-            return jsonify({'error': 'Invalid phone number format'}), 400
-    else:
-        return jsonify({'error': 'Phone number not provided'}), 400
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+# Use the wa.me short URL
+# Create the URL
+wa_url = f"https://wa.me/{phone_number}"
+# Send the request and get the response
+response = requests.get(wa_url)
+# Check the response status code
+if response.status_code == 200:
+    # The phone number has a WhatsApp account
+    print(f"{phone_number} has a WhatsApp account.")
+elif response.status_code == 404:
+    # The phone number does not have a WhatsApp account
+    print(f"{phone_number} does not have a WhatsApp account.")
+else:
+    # There was an error with the request
+    print(f"An error occurred: {response.status_code}")
